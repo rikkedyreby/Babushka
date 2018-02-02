@@ -1,0 +1,203 @@
+<!DOCTYPE html>
+<html lang="da">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Json</title>
+</head>
+
+<style>
+    body {
+        background-color: rgba(183, 103, 34, 0.6);
+
+    }
+
+
+    header {
+        background-color: rgba(90, 58, 31, 0.77);
+        grid-column: 1/4;
+        grid-row: 1;
+        display: grid;
+        grid-template-columns: 1fr 5fr 1fr;
+
+    }
+
+    main {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+
+    }
+
+    #menu-container {
+        display: grid;
+        grid-template-columns: repeat(3, 1fr);
+        grid-gap: 10px;
+
+        grid-column-start: 2;
+    }
+
+    #menu-overskrift {
+        grid-column-start: 2;
+    }
+
+
+    /*
+    header h1 {
+        font-size: 5em;
+        margin: 0 auto;
+        grid-column: 2;
+
+    }
+
+    header img {
+        width: 8%;
+        grid-column: 2;
+        margin: 0 auto;
+
+    }
+*/
+
+    /*
+    nav {
+        background-color: antiquewhite;
+        width: 300px;
+        margin: 20px;
+        border-radius: 5px;
+        grid-column: 2/4;
+        grid-row: 2;
+
+    }
+*/
+
+    footer {
+        background-color: rgba(90, 58, 31, 0.77);
+
+        grid-column: 1/4;
+        grid-row: 3;
+    }
+
+
+    .ret {
+
+        background-color: antiquewhite;
+        margin: 10px;
+        max-width: 400px;
+        grid-column:
+    }
+
+
+
+    /*
+    .ret h2 {
+        padding: 5px;
+    }
+
+    .ret p {
+        padding: 5px;
+    }
+
+    .ret img {
+        border-radius: 2px 5px;*/
+
+    }
+</style>
+
+<body>
+
+    <header>
+
+        <h1 id="babushka-overskrift">BISTRO BABUSHKA</h1>
+        <!--<img src="demo_pic.png" alt="demo">-->
+    </header>
+    <nav>
+        <button id="filter-alle">alle</button>
+        <button id="filter-forretter">forretter</button>
+        <button id="filter-hovedretter">hovedretter</button>
+        <button id="filter-desserter">desserter</button>
+        <button id="filter-sideorders">sideorders</button>
+        <button id="filter-drikkevarer">drikkevarer</button>
+    </nav>
+    <main>
+        <h1 id="menu-overskrift" data-overskrift></h1>
+        <section id="menu-container" data-container></section>
+    </main>
+    <template data-template>
+            <article class="ret">
+                <img src="" class="info" alt="" data-billede>
+                <h2 class="info" data-navn></h2>
+                <p><span class="info" data-pris></span></p>
+                <p class="info" data-kortbeskrivelse></p>
+            </article>
+        </template>
+    <footer>
+        <section>
+            <adress>Addresse: <br> Grønnegade 97<br> 1234 København K</adress>
+            <aside>Åbningstider: <br> Mandag - fredag 10:30 - 22:00 <br> Lørdag 12:00 - 23:00</aside>
+        </section>
+    </footer>
+
+</body>
+
+
+<script>
+    let retter = [];
+
+    document.addEventListener("DOMContentLoaded", hentJson);
+
+    async function hentJson() {
+        let jsonData = await fetch("menu.json");
+        retter = await jsonData.json();
+        visRetter(retter, "Menu");
+        lavFiltre();
+
+    }
+
+    function visRetter(retter, overskrift) {
+        let temp = document.querySelector("[data-template]");
+        let dest = document.querySelector("[data-container]");
+        dest.innerHTML = "";
+        document.querySelector('[data-overskrift]').textContent = overskrift;
+
+        retter.forEach(ret => {
+            let klon = temp.cloneNode(true).content;
+            klon.querySelector("[data-navn]").textContent = ret.navn + " - " + ret.pris + " kr.";
+            klon.querySelector("[data-billede]").src = "imgs/small/" + ret.billede + "-sm.jpg"; /*ny*/
+            klon.querySelector("[data-billede]").alt = "billede af" + " " + ret.navn;
+            klon.querySelector("[data-kortbeskrivelse]").textContent = " " + ret.kortbeskrivelse;
+            dest.appendChild(klon);
+        });
+    };
+
+    function lavFiltre() {
+        //find objekter der inderholder valte kategorier
+        let forretter = retter.filter(ret => ret.kategori == "forretter");
+        let hovedretter = retter.filter(ret => ret.kategori == "hovedretter");
+        let desserter = retter.filter(ret => ret.kategori == "desserter");
+        let sideorders = retter.filter(ret => ret.kategori == "sideorders");
+        let drikkevarer = retter.filter(ret => ret.kategori == "drikkevarer");
+
+        //Sorter retter efter kategori
+        document.querySelector('#filter-alle').addEventListener("click", () => {
+            visRetter(retter, "Menu");
+        });
+        document.querySelector('#filter-forretter').addEventListener("click", () => {
+            visRetter(forretter, "Forretter");
+        });
+        document.querySelector('#filter-hovedretter').addEventListener("click", () => {
+            visRetter(hovedretter, "Hovedretter");
+        });
+        document.querySelector('#filter-desserter').addEventListener("click", () => {
+            visRetter(desserter, "Desserter");
+        });
+        document.querySelector('#filter-sideorders').addEventListener("click", () => {
+            visRetter(sideorders, "Sideorders");
+        });
+        document.querySelector('#filter-drikkevarer').addEventListener("click", () => {
+            visRetter(drikkevarer, "Drikkevarer");
+        });
+
+    }
+</script>
+
+</html>

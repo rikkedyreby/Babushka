@@ -1,0 +1,13 @@
+.menutemplate {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: 1fr 3fr 1fr;
+    grid-gap: 10px;
+    max-width: 800px;
+    margin: 0 auto;
+}
+
+.ret {
+    border: 1px solid #000;
+    min-height: 100px;
+}
